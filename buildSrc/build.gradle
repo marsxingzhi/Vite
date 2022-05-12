@@ -1,0 +1,23 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version "1.5.30"
+}
+
+sourceSets {
+    main{
+        kotlin{
+            srcDir 'src/main/kotlin'
+        }
+    }
+}
+
+repositories {
+    google()
+    mavenCentral()
+    gradlePluginPortal()
+}
+
+dependencies {
+    implementation gradleApi()
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.5.30"
+//    implementation 'com.android.tools.build:gradle:7.1.1'
+}
