@@ -3,6 +3,7 @@ package com.mars.infra.plugin
 import com.mars.infra.plugin.internal.FileUtils
 import com.mars.infra.plugin.internal.Logger
 import com.mars.infra.plugin.internal.ModuleManager
+import com.mars.infra.plugin.internal.TAG_STEP_ONE
 import org.gradle.api.Project
 import java.io.File
 
@@ -28,16 +29,37 @@ object Vite {
      */
     fun checkModifiedModule(project: Project) {
         ModuleManager.prepare()
-        // 这个只能获取到app模块
-//        project.allprojects.forEach {
-//        }
         // 可以获取到所有的模块
         project.gradle.rootProject.allprojects.filter { it.name != it.rootProject.name }.forEach {
             Logger.i("Vite", "project name: ${it.name}")
             ModuleManager.computeModuleLastModifyTime(it)
         }
-
-        FileUtils.readModuleModifyInfo()
-//        ViteTest.writeModuleModifyInfo(project, ModuleManager.modifiedModuleMap)
+        val modifiedProjects = mutableListOf<String>()
+        val lastModuleModifyInfo = FileUtils.readModuleModifyInfo()
+        lastModuleModifyInfo?.let {
+            it.lastModify.forEach { (project, lastModifyTime) ->
+                val curMap = ModuleManager.getModifiedModuleMap().apply {
+                    if (this.isEmpty()) {
+                        throw Exception("last-modify module map is Empty")
+                    }
+                }
+                if (curMap[project] != lastModifyTime) {
+                    // cur project has modified
+                    modifiedProjects.add(project)
+                }
+            }
+        }?: run {
+            // 所有的项目都变更了
+            val curMap = ModuleManager.getModifiedModuleMap().apply {
+                if (this.isEmpty()) {
+                    throw Exception("last-modify module map is Empty")
+                }
+            }
+            modifiedProjects.addAll(curMap.keys)
+        }
+        modifiedProjects.forEach {
+            Logger.i(TAG_STEP_ONE, "project: $it has modified")
+        }
+        ModuleManager.writeModuleModifyInfo(project, ModuleManager.getModifiedModuleMap())
     }
 }

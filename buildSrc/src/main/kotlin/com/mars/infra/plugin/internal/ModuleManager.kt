@@ -1,5 +1,6 @@
 package com.mars.infra.plugin.internal
 
+import com.google.gson.Gson
 import org.gradle.api.Project
 import java.io.File
 
@@ -8,7 +9,11 @@ import java.io.File
  */
 object ModuleManager {
 
-    private val modifiedModuleMap = mutableMapOf<String, Long>()
+     private val modifiedModuleMap = mutableMapOf<String, Long>()
+
+    fun getModifiedModuleMap(): Map<String, Long> {
+        return modifiedModuleMap
+    }
 
     fun prepare() {
         modifiedModuleMap.clear()
@@ -25,6 +30,17 @@ object ModuleManager {
         }
         modifiedModuleMap[project.name] = sum
         Logger.i(TAG_STEP_ONE, "computeModuleLastModifyTime---project: ${project.name}, lastModifyTime: $sum")
+    }
+
+    fun writeModuleModifyInfo(project: Project, map: Map<String, Long>) {
+        val localMavenCache = FileUtils.getLocalMavenCache(project)
+        val json = File(localMavenCache, MODULE_LAST_MODIFY).apply {
+            if (!exists()) {
+                this.createNewFile()
+            }
+        }
+        val content = Gson().toJson(ModuleData(map))
+        json.writeText(content)
     }
 }
 

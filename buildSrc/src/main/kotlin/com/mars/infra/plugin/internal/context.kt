@@ -6,4 +6,4 @@ package com.mars.infra.plugin.internal
 
 const val MODULE_LAST_MODIFY = "moduleLastModify.json"
 
-const val TAG_STEP_ONE = "last-modify module"
+const val TAG_STEP_ONE = "last-modify-module-handle"
