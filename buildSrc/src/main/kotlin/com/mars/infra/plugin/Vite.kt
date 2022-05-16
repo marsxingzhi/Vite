@@ -1,10 +1,9 @@
 package com.mars.infra.plugin
 
-import com.mars.infra.plugin.internal.FileUtils
-import com.mars.infra.plugin.internal.Logger
-import com.mars.infra.plugin.internal.ModuleManager
-import com.mars.infra.plugin.internal.TAG_STEP_ONE
+import com.android.build.gradle.LibraryExtension
+import com.mars.infra.plugin.internal.*
 import org.gradle.api.Project
+import org.gradle.api.invocation.Gradle
 import java.io.File
 
 /**
@@ -48,7 +47,7 @@ object Vite {
                     modifiedProjects.add(project)
                 }
             }
-        }?: run {
+        } ?: run {
             // 所有的项目都变更了
             val curMap = ModuleManager.getModifiedModuleMap().apply {
                 if (this.isEmpty()) {
@@ -61,5 +60,22 @@ object Vite {
             Logger.i(TAG_STEP_ONE, "project: $it has modified")
         }
         ModuleManager.writeModuleModifyInfo(project, ModuleManager.getModifiedModuleMap())
+    }
+
+    // TODO 测试
+    fun projectsEvaluated(gradle: Gradle) {
+        gradle.rootProject.allprojects.forEach {
+            if (it.name == "login") {
+                val libraryExtension = try {
+                    it.project.extensions.getByType(LibraryExtension::class.java)
+                } catch (ignore: Exception) {
+                    null
+                }
+                if (libraryExtension != null) {
+                    // 生成aar
+                    AarManager.generate(mAppProject)
+                }
+            }
+        }
     }
 }

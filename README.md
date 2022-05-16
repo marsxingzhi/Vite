@@ -2,4 +2,5 @@
 build faster  
 
 ## TODO  
-- [ ] which modules were modified
+- [x] which modules were modified
+- [ ] how to generate aar
