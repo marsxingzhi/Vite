@@ -11,6 +11,7 @@ class VitePlugin: Plugin<Project> {
 
     override fun apply(project: Project) {
         println("VitePlugin apply 😄")
+        Vite.prepare(project)
         Vite.checkModifiedModule(project)
     }
 }
