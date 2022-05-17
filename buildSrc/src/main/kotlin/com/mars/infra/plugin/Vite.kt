@@ -27,6 +27,7 @@ object Vite {
      * 检查模块是否修改过
      */
     fun checkModifiedModule(project: Project) {
+        ViteTest.collectProject(project)
         ModuleManager.prepare()
         // 可以获取到所有的模块
         project.gradle.rootProject.allprojects.filter { it.name != it.rootProject.name }.forEach {
