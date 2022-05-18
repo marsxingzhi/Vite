@@ -2,6 +2,7 @@ package com.mars.infra.plugin.internal
 
 import com.android.build.gradle.AppExtension
 import com.mars.infra.plugin.ViteTest
+import com.mars.infra.plugin.internal.task.UploadLocalMavenTask
 import org.gradle.api.Project
 import org.gradle.api.Task
 
@@ -14,6 +15,8 @@ object AarManager {
 
     /**
      * 1. 找到对应的assemble${FlavorName}${BuildType}的任务，例如：assembleDebug
+     * 2. 在assembleDebug后面插入bundleDebugTask
+     * 3. 在bundleDebugTask任务后面插入upload local maven task
      */
     fun generate(appProject: Project) {
         // 必须是project: app才能获取到AppExtension
@@ -31,7 +34,19 @@ object AarManager {
             taskProvider.configure { task ->
                 task.finalizedBy(bundleTask)
             }
+            bundleTask.finalizedBy(getUploadLocalMavenTask(loginProject, it.buildType.name.capitalize()))
         }
+    }
+
+    // 将module的aar拷贝至LocalMavenCache
+    private fun getUploadLocalMavenTask(project: Project, variantName: String): Task {
+        // 1.创建task
+        val task =  project.tasks.maybeCreate(
+            "uploadLocalMaven${variantName}Task",
+            UploadLocalMavenTask::class.java
+        )
+        task.config(project, variantName)
+        return task
     }
 
     // 获取bundle${Flavor}${BuildType}Aar的Task，打aar的Task

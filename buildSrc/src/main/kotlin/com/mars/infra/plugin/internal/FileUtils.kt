@@ -10,7 +10,8 @@ import java.io.File
  */
 object FileUtils {
 
-    fun getLocalMavenCache(project: Project): File {
+    fun getLocalMavenCache(project: Project?): File {
+        project ?: throw NullPointerException("project must not be null!")
         val path = project.rootProject.projectDir.absolutePath
         val localMavenCache = "$path/local-maven/cache"
         val cache = File(localMavenCache).apply {
@@ -27,7 +28,8 @@ object FileUtils {
         if (!moduleLastModifyJson.exists()) {
             return null
         }
-        val moduleData = Gson().fromJson(moduleLastModifyJson.inputStream().reader(), ModuleData::class.java)
+        val moduleData =
+            Gson().fromJson(moduleLastModifyJson.inputStream().reader(), ModuleData::class.java)
         Logger.i(TAG_STEP_ONE, "readModuleModifyInfo---moduleData = $moduleData")
         return moduleData
     }

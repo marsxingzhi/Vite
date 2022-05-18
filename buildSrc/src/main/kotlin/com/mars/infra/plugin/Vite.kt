@@ -11,8 +11,8 @@ import java.io.File
  */
 object Vite {
 
-    lateinit var mLocalMavenCache: File
-    lateinit var mAppProject: Project
+    var mLocalMavenCache: File? = null
+    var mAppProject: Project? = null
 
     /**
      * 1. localMaven
@@ -74,7 +74,7 @@ object Vite {
                 }
                 if (libraryExtension != null) {
                     // 生成aar
-                    AarManager.generate(mAppProject)
+                    mAppProject?.let { AarManager.generate(mAppProject!!) }
                 }
             }
         }
