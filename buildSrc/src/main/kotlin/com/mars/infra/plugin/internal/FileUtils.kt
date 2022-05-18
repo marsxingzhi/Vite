@@ -12,7 +12,8 @@ object FileUtils {
 
     fun getLocalMavenCache(project: Project?): File {
         project ?: throw NullPointerException("project must not be null!")
-        val path = project.rootProject.projectDir.absolutePath
+//        val path = project.rootProject.projectDir.absolutePath
+        val path = project.rootProject.buildDir.absolutePath
         val localMavenCache = "$path/local-maven/cache"
         val cache = File(localMavenCache).apply {
             if (!this.exists()) {

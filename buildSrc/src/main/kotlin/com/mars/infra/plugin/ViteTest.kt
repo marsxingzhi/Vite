@@ -41,11 +41,16 @@ object ViteTest {
      * 测试：在login module中添加base-util module的依赖
      */
     fun addDependency() {
-        val loginProject = ModuleManager.getAllModuleMap()["login"]
-        val configName = "implementation"
-        val map = hashMapOf<String, String>()
-        map["name"] = "account-debug"
-        map["ext"] = "aar"
-        loginProject!!.dependencies.add(configName, map)
+        try {
+            val loginProject = ModuleManager.getAllModuleMap()["login"]
+            val configName = "implementation"
+            val map = hashMapOf<String, String>()
+            map["name"] = "account-debug"
+            map["ext"] = "aar"
+            loginProject!!.dependencies.add(configName, map)
+        } catch (ignore: Exception) {
+
+        }
+
     }
 }
