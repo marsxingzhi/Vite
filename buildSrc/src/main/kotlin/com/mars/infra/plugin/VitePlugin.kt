@@ -19,6 +19,7 @@ class VitePlugin: Plugin<Project> {
         project.gradle.projectsEvaluated {
             Logger.i("Vite-Plugin", "$it")
             Vite.projectsEvaluated(it)
+            ViteTest.addDependency()
         }
     }
 }

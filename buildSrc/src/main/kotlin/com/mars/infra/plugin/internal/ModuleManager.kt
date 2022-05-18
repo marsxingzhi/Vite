@@ -44,6 +44,10 @@ object ModuleManager {
         return moduleMap
     }
 
+    fun getAllModuleMap(): Map<String, Project> {
+        return allModuleMap
+    }
+
     fun prepare() {
         moduleMap.clear()
         allModuleMap.clear()

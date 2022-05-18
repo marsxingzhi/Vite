@@ -1,10 +1,7 @@
 package com.mars.infra.plugin
 
 import com.google.gson.Gson
-import com.mars.infra.plugin.internal.FileUtils
-import com.mars.infra.plugin.internal.Logger
-import com.mars.infra.plugin.internal.MODULE_LAST_MODIFY
-import com.mars.infra.plugin.internal.ModuleData
+import com.mars.infra.plugin.internal.*
 import org.gradle.api.Project
 import java.io.File
 
@@ -15,7 +12,7 @@ import java.io.File
  */
 object ViteTest {
 
-    val projectMap = mutableMapOf<String, Project>()
+    private val projectMap = mutableMapOf<String, Project>()
 
     fun writeModuleModifyInfo(project: Project, map: Map<String, Long>) {
         val localMavenCache = FileUtils.getLocalMavenCache(project)
@@ -38,5 +35,17 @@ object ViteTest {
         projectMap.forEach { (name, project) ->
             Logger.i("ViteTest", "name = $name, project = $project")
         }
+    }
+
+    /**
+     * 测试：在login module中添加base-util module的依赖
+     */
+    fun addDependency() {
+        val loginProject = ModuleManager.getAllModuleMap()["login"]
+        val configName = "implementation"
+        val map = hashMapOf<String, String>()
+        map["name"] = "account-debug"
+        map["ext"] = "aar"
+        loginProject!!.dependencies.add(configName, map)
     }
 }

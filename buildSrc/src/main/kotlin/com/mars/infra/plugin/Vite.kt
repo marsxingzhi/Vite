@@ -21,6 +21,15 @@ object Vite {
         Logger.enable(true)
         mAppProject = project
         mLocalMavenCache = FileUtils.getLocalMavenCache(project)
+        flatDir()
+    }
+
+    private fun flatDir() {
+        val map = hashMapOf<String, File>()
+        map["dirs"] = mLocalMavenCache!!
+        mAppProject!!.rootProject.allprojects.forEach {
+            it.repositories.flatDir(map)
+        }
     }
 
     /**
@@ -71,20 +80,5 @@ object Vite {
                 AarManager.generate(it, project)
             }
         }
-
-//        gradle.rootProject.allprojects.forEach {
-//
-//            if (modifiedModules.contains(it.name)) {
-//                val libraryExtension = try {
-//                    it.project.extensions.getByType(LibraryExtension::class.java)
-//                } catch (ignore: Exception) {
-//                    null
-//                }
-//                if (libraryExtension != null) {
-//                    // 生成aar
-//                    mAppProject?.let { AarManager.generate(mAppProject!!) }
-//                }
-//            }
-//        }
     }
 }
