@@ -11,30 +11,30 @@ import org.gradle.api.Task
  */
 object AarManager {
 
-    const val ASSEMBLE = "assemble"
+    private const val ASSEMBLE = "assemble"
 
     /**
      * 1. 找到对应的assemble${FlavorName}${BuildType}的任务，例如：assembleDebug
      * 2. 在assembleDebug后面插入bundleDebugTask
      * 3. 在bundleDebugTask任务后面插入upload local maven task
      */
-    fun generate(appProject: Project) {
+    fun generate(appProject: Project, childProject: Project) {
+        Logger.i("Aar-Manager", "start generate $childProject module aar")
         // 必须是project: app才能获取到AppExtension
         val android = appProject.extensions.getByType(AppExtension::class.java)
         android.applicationVariants.forEach {
-            Logger.i("AarManager", "variant: ${it}")
+            Logger.i("AarManager", "variant: $it")
             val assembleTaskName =
                 "$ASSEMBLE${it.flavorName.capitalize()}${it.buildType.name.capitalize()}"
             val taskProvider = appProject.tasks.named(assembleTaskName) ?: throw Exception("不存在name为${assembleTaskName}的Task")
 
-            // TODO 测试，暂时指定login模块
-            val loginProject = ViteTest.projectMap["login"]!!
-            val bundleTask = obtainBundleTask(loginProject, it.buildType.name.capitalize())
+//            val loginProject = ViteTest.projectMap["login"]!!
+            val bundleTask = obtainBundleTask(childProject, it.buildType.name.capitalize())
 
             taskProvider.configure { task ->
                 task.finalizedBy(bundleTask)
             }
-            bundleTask.finalizedBy(getUploadLocalMavenTask(loginProject, it.buildType.name.capitalize()))
+            bundleTask.finalizedBy(getUploadLocalMavenTask(childProject, it.buildType.name.capitalize()))
         }
     }
 

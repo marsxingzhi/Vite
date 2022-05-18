@@ -11,13 +11,13 @@ import org.gradle.api.Project
 class VitePlugin: Plugin<Project> {
 
     override fun apply(project: Project) {
-        println("VitePlugin apply 😄, project: $project")
+        Logger.i("Vite-Plugin", "apply 😄, project: $project")
         Vite.prepare(project)
         Vite.checkModifiedModule(project)
 
         // 所有项目的build.gradle执行完成后，回调的
         project.gradle.projectsEvaluated {
-            Logger.i("VitePlugin", "$it")
+            Logger.i("Vite-Plugin", "$it")
             Vite.projectsEvaluated(it)
         }
     }

@@ -31,14 +31,14 @@ object Vite {
         ModuleManager.prepare()
         // 可以获取到所有的模块
         project.gradle.rootProject.allprojects.filter { it.name != it.rootProject.name }.forEach {
-            Logger.i("Vite", "project name: ${it.name}")
+            ModuleManager.recordModule(it)
             ModuleManager.computeModuleLastModifyTime(it)
         }
         val modifiedProjects = mutableListOf<String>()
         val lastModuleModifyInfo = FileUtils.readModuleModifyInfo()
         lastModuleModifyInfo?.let {
             it.lastModify.forEach { (project, lastModifyTime) ->
-                val curMap = ModuleManager.getModifiedModuleMap().apply {
+                val curMap = ModuleManager.getModuleMap().apply {
                     if (this.isEmpty()) {
                         throw Exception("last-modify module map is Empty")
                     }
@@ -50,7 +50,7 @@ object Vite {
             }
         } ?: run {
             // 所有的项目都变更了
-            val curMap = ModuleManager.getModifiedModuleMap().apply {
+            val curMap = ModuleManager.getModuleMap().apply {
                 if (this.isEmpty()) {
                     throw Exception("last-modify module map is Empty")
                 }
@@ -60,23 +60,31 @@ object Vite {
         modifiedProjects.forEach {
             Logger.i(TAG_STEP_ONE, "project: $it has modified")
         }
-        ModuleManager.writeModuleModifyInfo(project, ModuleManager.getModifiedModuleMap())
+        ModuleManager.saveModifiedModules(modifiedProjects)
+        ModuleManager.writeModuleModifyInfo(project, ModuleManager.getModuleMap())
     }
 
-    // TODO 测试
     fun projectsEvaluated(gradle: Gradle) {
-        gradle.rootProject.allprojects.forEach {
-            if (it.name == "login") {
-                val libraryExtension = try {
-                    it.project.extensions.getByType(LibraryExtension::class.java)
-                } catch (ignore: Exception) {
-                    null
-                }
-                if (libraryExtension != null) {
-                    // 生成aar
-                    mAppProject?.let { AarManager.generate(mAppProject!!) }
-                }
+        ModuleManager.getModifiedModules().onEach { project ->
+            Logger.i("modified-modules", "project name = ${project.name}")
+            mAppProject?.let {
+                AarManager.generate(it, project)
             }
         }
+
+//        gradle.rootProject.allprojects.forEach {
+//
+//            if (modifiedModules.contains(it.name)) {
+//                val libraryExtension = try {
+//                    it.project.extensions.getByType(LibraryExtension::class.java)
+//                } catch (ignore: Exception) {
+//                    null
+//                }
+//                if (libraryExtension != null) {
+//                    // 生成aar
+//                    mAppProject?.let { AarManager.generate(mAppProject!!) }
+//                }
+//            }
+//        }
     }
 }

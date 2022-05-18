@@ -1,5 +1,6 @@
 package com.mars.infra.plugin.internal
 
+import com.android.build.gradle.LibraryExtension
 import com.google.gson.Gson
 import org.gradle.api.Project
 import java.io.File
@@ -9,14 +10,43 @@ import java.io.File
  */
 object ModuleManager {
 
-     private val modifiedModuleMap = mutableMapOf<String, Long>()
+    // 全局所有的module的映射表, key: name, value: project
+    private val allModuleMap = mutableMapOf<String, Project>()
+    private val moduleMap = mutableMapOf<String, Long>()
+    private val modifiedModuleList = mutableListOf<String>()
 
-    fun getModifiedModuleMap(): Map<String, Long> {
-        return modifiedModuleMap
+    fun saveModifiedModules(modifiedModules: MutableList<String>) {
+        modifiedModuleList.clear()
+        modifiedModuleList.addAll(modifiedModules)
+    }
+
+    /**
+     * 存在修改的模块，不包含app模块
+     */
+    fun getModifiedModules(): List<Project> {
+        val result = arrayListOf<Project>()
+        modifiedModuleList.filter { it != "app" }.forEach {
+            val project = allModuleMap[it]
+            val libraryExtension =
+                try {
+                    project!!.extensions.getByType(LibraryExtension::class.java)
+                } catch (ignore: Exception) {
+                    null
+                }
+            if (libraryExtension != null) {
+                result.add(project!!)
+            }
+        }
+        return result
+    }
+
+    fun getModuleMap(): Map<String, Long> {
+        return moduleMap
     }
 
     fun prepare() {
-        modifiedModuleMap.clear()
+        moduleMap.clear()
+        allModuleMap.clear()
     }
 
     fun computeModuleLastModifyTime(project: Project) {
@@ -28,8 +58,8 @@ object ModuleManager {
                 Logger.i(TAG_STEP_ONE, "last-modify time of $it is $this")
             }
         }
-        modifiedModuleMap[project.name] = sum
-        Logger.i(TAG_STEP_ONE, "computeModuleLastModifyTime---project: ${project.name}, lastModifyTime: $sum")
+        moduleMap[project.name] = sum
+//        Logger.i(TAG_STEP_ONE, "computeModuleLastModifyTime---project: ${project.name}, lastModifyTime: $sum")
     }
 
     fun writeModuleModifyInfo(project: Project, map: Map<String, Long>) {
@@ -41,6 +71,11 @@ object ModuleManager {
         }
         val content = Gson().toJson(ModuleData(map))
         json.writeText(content)
+    }
+
+    fun recordModule(project: Project) {
+        Logger.i("ModuleManager", "project name = ${project.name}")
+        allModuleMap[project.name] = project
     }
 }
 
