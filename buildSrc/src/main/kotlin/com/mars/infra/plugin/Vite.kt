@@ -97,7 +97,7 @@ object Vite {
      *
      * 找到依赖project的module
      */
-    private fun modifyDependencies(project: Project) {
+    private fun modifyDependencies(childProject: Project) {
         if (hasModified) {
             return
         }
@@ -108,7 +108,7 @@ object Vite {
             if (it.name == "login") {
                 it.getConfigurationList().forEach { configuration ->
                     // 当前module是否依赖project
-                    val isDepend = configuration.findDependencies(project)
+                    val isDepend = configuration.findDependencies(childProject)
                     // 如果是，则将account.aar以及account的child依赖全部传递到当前module
                     if (isDepend) {
                         parentProjectMap[it]?.apply {
@@ -133,11 +133,27 @@ object Vite {
             it.value.forEach { configuration ->
                 // 1. 删除原始依赖
                 configuration.dependencies.removeAll { dependency ->
-                    dependency is DefaultProjectDependency && dependency.name.contains(project.name)
+                    dependency is DefaultProjectDependency && dependency.name.contains(childProject.name)
                 }
+
                 // 2. 添加aar依赖
                 DependencyManager.addDependencyWithAar(it.key)
-                // TODO 3. child依赖传递给当前module
+
+                // 3. child依赖传递给当前module
+                childProject.getConfigurationList().forEach { childProjectConfiguration ->
+                    childProjectConfiguration.dependencies.forEach { childProjectDependency ->
+                        // androidx.core:core-ktx:1.7.0 这些都不是DefaultProjectDependency
+                        if (childProjectDependency is DefaultProjectDependency) {
+                            if (childProjectDependency.targetConfiguration == null) {
+                                childProjectDependency.targetConfiguration = "default"
+                            }
+                            val dependencyClone = childProjectDependency.copy()
+                            dependencyClone.targetConfiguration = null
+                            Logger.i("依赖迁移", "${childProjectConfiguration.name}  $dependencyClone")
+                            it.key.dependencies.add(childProjectConfiguration.name, dependencyClone)
+                        }
+                    }
+                }
             }
         }
     }
