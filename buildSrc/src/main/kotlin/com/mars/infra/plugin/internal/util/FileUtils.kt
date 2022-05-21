@@ -1,7 +1,10 @@
-package com.mars.infra.plugin.internal
+package com.mars.infra.plugin.internal.util
 
 import com.google.gson.Gson
 import com.mars.infra.plugin.Vite
+import com.mars.infra.plugin.internal.model.MODULE_LAST_MODIFY
+import com.mars.infra.plugin.internal.model.TAG_STEP_ONE
+import com.mars.infra.plugin.internal.model.ModuleData
 import org.gradle.api.Project
 import java.io.File
 

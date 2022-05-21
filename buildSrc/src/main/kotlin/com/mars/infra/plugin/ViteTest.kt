@@ -2,6 +2,10 @@ package com.mars.infra.plugin
 
 import com.google.gson.Gson
 import com.mars.infra.plugin.internal.*
+import com.mars.infra.plugin.internal.model.MODULE_LAST_MODIFY
+import com.mars.infra.plugin.internal.model.ModuleData
+import com.mars.infra.plugin.internal.util.FileUtils
+import com.mars.infra.plugin.internal.util.Logger
 import org.gradle.api.Project
 import java.io.File
 
@@ -52,5 +56,20 @@ object ViteTest {
 
         }
 
+    }
+
+    /**
+     * 获取module的依赖
+     */
+    fun getModuleDependencies() {
+        val module = ModuleManager.getAllModuleMap()["feed"]
+        val configurationsImpl = module!!.configurations.maybeCreate("implementation")
+        configurationsImpl.dependencies.forEach {
+            Logger.i("getModuleDependencies", "implementation---dependency = $it")
+        }
+        val configurationsApi =  module.configurations.maybeCreate("api")
+        configurationsApi.dependencies.forEach {
+            Logger.i("getModuleDependencies", "api---dependency = $it")
+        }
     }
 }

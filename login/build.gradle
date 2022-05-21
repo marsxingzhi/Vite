@@ -44,5 +44,6 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
-     // implementation (name: 'account-debug', ext: 'aar')
+    // 这个需要动态添加的
+    api (name: 'account-debug', ext: 'aar')
 }

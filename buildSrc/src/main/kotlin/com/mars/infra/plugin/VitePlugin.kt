@@ -1,6 +1,6 @@
 package com.mars.infra.plugin
 
-import com.mars.infra.plugin.internal.Logger
+import com.mars.infra.plugin.internal.util.Logger
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -20,6 +20,7 @@ class VitePlugin: Plugin<Project> {
             Logger.i("Vite-Plugin", "$it")
             Vite.projectsEvaluated(it)
 //            ViteTest.addDependency()
+            ViteTest.getModuleDependencies()
         }
     }
 }

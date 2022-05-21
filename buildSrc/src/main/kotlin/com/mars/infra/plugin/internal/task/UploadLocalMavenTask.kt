@@ -1,8 +1,8 @@
 package com.mars.infra.plugin.internal.task
 
 import com.mars.infra.plugin.Vite
-import com.mars.infra.plugin.internal.FileUtils
-import com.mars.infra.plugin.internal.Logger
+import com.mars.infra.plugin.internal.util.FileUtils
+import com.mars.infra.plugin.internal.util.Logger
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskAction

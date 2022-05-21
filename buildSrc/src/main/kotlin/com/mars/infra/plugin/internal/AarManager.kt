@@ -1,8 +1,8 @@
 package com.mars.infra.plugin.internal
 
 import com.android.build.gradle.AppExtension
-import com.mars.infra.plugin.ViteTest
 import com.mars.infra.plugin.internal.task.UploadLocalMavenTask
+import com.mars.infra.plugin.internal.util.Logger
 import org.gradle.api.Project
 import org.gradle.api.Task
 
