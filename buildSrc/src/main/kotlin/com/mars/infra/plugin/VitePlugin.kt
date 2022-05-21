@@ -20,7 +20,7 @@ class VitePlugin: Plugin<Project> {
             Logger.i("Vite-Plugin", "$it")
             Vite.projectsEvaluated(it)
 //            ViteTest.addDependency()
-            ViteTest.getModuleDependencies()
+//            ViteTest.getModuleDependencies()
         }
     }
 }

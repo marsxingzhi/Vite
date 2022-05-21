@@ -15,8 +15,13 @@ import java.io.File
  */
 object ModuleManager {
 
-    // 全局所有的module的映射表, key: name, value: project
+    // 全局所有的module的映射表, key: name, value: project，包含app module，不包含root
     private val allModuleMap = mutableMapOf<String, Project>()
+    // 所有修改的module，不包含root、app
+    // private val moduleMapModified = mutableMapOf<String, Project>()
+    // 所有未修改的module，不包含root、app
+    // private val moduleMapNotModified = mutableMapOf<String, Project>()
+    // module的last modify time
     private val moduleMap = mutableMapOf<String, Long>()
     private val modifiedModuleList = mutableListOf<String>()
 
